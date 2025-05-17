@@ -1,0 +1,26 @@
+livekit-agents~=1.0
+livekit-plugins-openai~=1.0
+livekit-plugins-cartesia~=1.0
+livekit-plugins-deepgram~=1.0
+livekit-plugins-silero~=1.0
+# optional, only when using LiveKit's turn detection model
+livekit-plugins-turn-detector~=1.0
+# optional, only if background voice & noise cancellation is needed
+livekit-plugins-noise-cancellation>=0.2.0,<1.0.0
+python-dotenv~=1.0
+
+# LiveKit plugins
+livekit-plugins-openai[vertex]
+livekit-plugins-google
+livekit-plugins-cartesia
+livekit-plugins-deepgram
+livekit-plugins-silero
+livekit-plugins-turn-detector
+
+# PDF processing and RAG
+pdfplumber~=0.11.6
+langchain-text-splitters~=0.3.8
+# Use a single version of langchain to avoid conflicts
+langchain>=0.0.267
+openai>=0.28.1
+chromadb>=0.4.13
