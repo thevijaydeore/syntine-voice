@@ -2,7 +2,7 @@
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 # More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
 
-name: Build and deploy Python app to Azure Web App - Syntine
+name: Build and deploy Python app to Azure Web App - syntine
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
       - name: Set up Python version
         uses: actions/setup-python@v5
         with:
-          python-version: '3.13'
+          python-version: '3.10'
 
       - name: Create and start virtual environment
         run: |
@@ -68,14 +68,14 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_D0B30DF249864B9AB9B0EBFD4238070A }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_262D3448F0B0417CAACB27BFDC5F3B2D }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_AFDE73F7DB3C4D79810AED8622706136 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_78E7A2FDBD6A4912B8BD7728BC7CB0C7 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_DFDC1347302F42678D90152B10E37328 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_A69F4BF1F51C4A3DB5D78B0D6A6DBCA8 }}
 
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v3
         id: deploy-to-webapp
         with:
-          app-name: 'Syntine'
+          app-name: 'syntine'
           slot-name: 'Production'
           
