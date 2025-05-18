@@ -26,6 +26,8 @@ docstring_parser==0.16
 durationpy==0.9
 eval_type_backport==0.2.2
 fastapi==0.115.9
+# Using sentence-transformers which includes FAISS for Windows compatibility
+sentence-transformers==2.6.0
 filelock==3.18.0
 flatbuffers==25.2.10
 frozenlist==1.6.0
@@ -60,6 +62,9 @@ langchain==0.3.25
 langchain-community==0.3.24
 langchain-core==0.3.59
 langchain-openai==0.3.17
+langchain-groq==0.2.0
+langchain-huggingface==0.2.0
+groq==0.3.0
 langchain-text-splitters==0.3.8
 langsmith==0.3.42
 livekit==1.0.7
@@ -70,6 +75,7 @@ livekit-plugins-deepgram==1.0.21
 livekit-plugins-google==1.0.21
 livekit-plugins-noise-cancellation==0.2.3
 livekit-plugins-openai==1.0.21
+livekit-plugins-groq==1.0.22
 livekit-plugins-silero==1.0.21
 livekit-plugins-turn-detector==1.0.21
 livekit-protocol==1.0.2

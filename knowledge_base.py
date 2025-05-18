@@ -12,9 +12,12 @@ import logging
 import pickle
 from typing import List, Dict, Any, Optional
 
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.vectorstores import Chroma
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain.vectorstores import FAISS
 from langchain.vectorstores.base import VectorStore
+
+# Ensure FAISS is properly imported through sentence-transformers
+import sentence_transformers
 
 from pdf_extractor import process_pdf
 
@@ -37,9 +40,17 @@ class KnowledgeBase:
         
         # Create embedding model if not provided
         if embedding_model is None:
-            # Default to OpenAI embeddings (requires API key)
-            # You can replace this with other embedding models as needed
-            self.embedding_model = OpenAIEmbeddings()
+            # Using HuggingFace embeddings with API key
+            # This uses the HuggingFace Inference API
+            hf_api_key = os.environ.get("HUGGINGFACE_API_KEY")
+            if not hf_api_key:
+                logger.warning("HUGGINGFACE_API_KEY not found in environment variables")
+            
+            self.embedding_model = HuggingFaceEmbeddings(
+                model_name="sentence-transformers/all-mpnet-base-v2",
+                api_key=hf_api_key,  # Use API key for cloud-based inference
+                encode_kwargs={"normalize_embeddings": True}
+            )
         else:
             self.embedding_model = embedding_model
             
@@ -75,12 +86,13 @@ class KnowledgeBase:
         if self.vectorstore is None:
             # Create new vector store
             try:
-                self.vectorstore = Chroma.from_texts(
+                self.vectorstore = FAISS.from_texts(
                     texts=chunks,
-                    embedding=self.embedding_model,
-                    persist_directory=self.persist_directory
+                    embedding=self.embedding_model
                 )
-                logger.info(f"Created new vector store in {self.persist_directory} with {len(chunks)} chunks")
+                # Save the FAISS index
+                self.vectorstore.save_local(self.persist_directory)
+                logger.info(f"Created new FAISS vector store in {self.persist_directory} with {len(chunks)} chunks")
             except Exception as e:
                 logger.error(f"Error creating vector store: {e}")
                 raise
@@ -95,8 +107,8 @@ class KnowledgeBase:
         
         # Persist vector store
         try:
-            self.vectorstore.persist()
-            logger.info("Vector store persisted to disk")
+            self.vectorstore.save_local(self.persist_directory)
+            logger.info("FAISS vector store persisted to disk")
         except Exception as e:
             logger.error(f"Error persisting vector store: {e}")
             raise
@@ -120,17 +132,23 @@ class KnowledgeBase:
         Returns:
             True if loaded successfully, False otherwise
         """
+        logger.info(f"Loading FAISS vector store from {self.persist_directory}")
+        
         try:
-            if os.path.exists(self.persist_directory):
-                self.vectorstore = Chroma(
-                    persist_directory=self.persist_directory,
-                    embedding_function=self.embedding_model
-                )
-                logger.info(f"Loaded vector store from {self.persist_directory}")
-                return True
-            else:
-                logger.warning(f"No vector store found at {self.persist_directory}")
+            # Check if the directory exists and has content
+            if not os.path.exists(self.persist_directory) or not os.listdir(self.persist_directory):
+                logger.warning(f"Vector store directory {self.persist_directory} does not exist or is empty")
                 return False
+                
+            # Load the vector store
+            self.vectorstore = FAISS.load_local(
+                folder_path=self.persist_directory,
+                embeddings=self.embedding_model
+            )
+            
+            logger.info("FAISS vector store loaded successfully")
+            return True
+            
         except Exception as e:
             logger.error(f"Error loading vector store: {e}")
             return False
@@ -171,16 +189,18 @@ class KnowledgeBase:
             if not results and k > 0:
                 logger.warning("No results found with similarity search, trying more basic approach")
                 try:
-                    # Get all documents and do a simple keyword search
-                    all_docs = self.vectorstore.get()
-                    if all_docs and 'documents' in all_docs and all_docs['documents']:
-                        logger.info(f"Vector store contains {len(all_docs['documents'])} total documents")
+                    # For FAISS, we need to handle fallback differently since it doesn't have a .get() method
+                    # We'll use the docstore that FAISS maintains internally
+                    if hasattr(self.vectorstore, 'docstore') and self.vectorstore.docstore:
+                        # Get all documents from the docstore
+                        all_docs = [doc.page_content for doc in self.vectorstore.docstore.values()]
+                        logger.info(f"FAISS vector store contains {len(all_docs)} total documents")
                         
                         # Simple keyword matching as fallback
                         query_terms = query.lower().split()
                         matched_docs = []
                         
-                        for doc in all_docs['documents']:
+                        for doc in all_docs:
                             doc_text = doc.lower()
                             matches = sum(1 for term in query_terms if term in doc_text)
                             if matches > 0:

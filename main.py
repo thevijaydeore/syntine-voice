@@ -17,11 +17,11 @@ from livekit.agents import (
 )
 from livekit.plugins import (
     cartesia,
-    openai,
     deepgram,
     noise_cancellation,
     silero,
 )
+from livekit.plugins import groq
 from livekit.plugins.turn_detector.multilingual import MultilingualModel
 
 # Import our knowledge base
@@ -34,14 +34,14 @@ logger = logging.getLogger("voice-agent")
 
 class Assistant(Agent):
     def __init__(self, knowledge_base=None) -> None:
-        # This project is configured to use Deepgram STT, OpenAI LLM and Cartesia TTS plugins
-        # Other great providers exist like Cerebras, ElevenLabs, Groq, Play.ht, Rime, and more
+        # This project is configured to use Deepgram STT, Groq LLM and Cartesia TTS plugins
+        # We're using Groq for LLM and embeddings
         # Learn more and pick the best one for your app:
         # https://docs.livekit.io/agents/plugins
         super().__init__(
-            instructions="You are an AI voice assistant for ElectroMech Pvt. Ltd., a company that offers industrial automation products and solutions such as PLCs, HMIs, VFDs, SCADA systems, and complete automation project execution services. You communicate with customers who may be factory managers, procurement officers, engineers, or business owners from manufacturing industries looking to adopt or upgrade their automation solutions. Your goal is to greet callers professionally, understand their requirements (product inquiries, technical support, service requests, partnership opportunities, or training), answer basic queries related to Tyton’s products and services, collect caller details such as name, company, contact information, and specific needs, and forward complex or custom queries to the human team or take a message with proper context. You should be polite, clear, and concise, use simple, professional language, and guide the caller logically through the conversation without overwhelming them.",
+            instructions="You are an AI voice assistant for ElectroMech Pvt. Ltd., a company that offers industrial automation products and solutions such as PLCs, HMIs, VFDs, SCADA systems, and complete automation project execution services. You communicate with customers who may be factory managers, procurement officers, engineers, or business owners from manufacturing industries looking to adopt or upgrade their automation solutions. Your goal is to greet callers professionally, understand their requirements (product inquiries, technical support, service requests, partnership opportunities, or training), answer basic queries related to ElectroMech's products and services, collect caller details such as name, company, contact information, and specific needs, and forward complex or custom queries to the human team or take a message with proper context. You should be polite, clear, and concise, use simple, professional language, and guide the caller logically through the conversation without overwhelming them. IMPORTANT: Never include your internal thinking process in your responses. Do not use <think> tags or similar formatting in your responses. Only provide direct, professional responses to the user without revealing your reasoning process.",
             stt=deepgram.STT(),
-            llm=openai.LLM(model="gpt-4o-mini"),
+            llm=groq.LLM(model="meta-llama/llama-4-scout-17b-16e-instruct"),  # Using Llama model with Groq
             tts=deepgram.TTS(),
             # use LiveKit's transformer-based turn detector
             turn_detection=MultilingualModel(),
