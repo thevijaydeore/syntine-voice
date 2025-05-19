@@ -1,40 +1,40 @@
 # Core dependencies
-python-dotenv==1.1.0
-livekit==1.0.7
-livekit-agents==1.0.21
-livekit-api==1.0.2
+python-dotenv
+livekit
+livekit-agents
+livekit-api
 
 # LiveKit plugins
-livekit-plugins-cartesia==1.0.21
-livekit-plugins-deepgram==1.0.21
-livekit-plugins-noise-cancellation==0.2.3
-livekit-plugins-silero==1.0.21
-livekit-plugins-turn-detector==1.0.21
-livekit-plugins-groq==1.0.22
+livekit-plugins-cartesia
+livekit-plugins-deepgram
+livekit-plugins-noise-cancellation
+livekit-plugins-silero
+livekit-plugins-turn-detector
+livekit-plugins-groq
 
 # LLM and Embeddings
-groq==0.3.0
-langchain==0.3.25
-langchain-community==0.3.24
-langchain-core==0.3.59
-langchain-groq==0.2.0
-langchain-huggingface==0.2.0
-sentence-transformers==2.6.0
-transformers==4.51.3
-torch==2.2.0
+groq
+langchain
+langchain-community
+langchain-core
+langchain-groq
+langchain-huggingface
+sentence-transformers
+transformers
+torch
 
 # PDF Processing
-pdfplumber==0.11.6
-langchain-text-splitters==0.3.8
-pdfminer.six==20250327
+pdfplumber
+langchain-text-splitters
+pdfminer.six
 
 # Vector Store
-faiss-cpu==1.7.4
+faiss-cpu
 
 # Utilities
-numpy==2.2.5
-requests==2.32.3
-python-dateutil==2.9.0.post0
-typing-extensions==4.13.2
-tqdm==4.67.1
-huggingface-hub==0.31.2
+numpy
+requests
+python-dateutil
+typing-extensions
+tqdm
+huggingface-hub
